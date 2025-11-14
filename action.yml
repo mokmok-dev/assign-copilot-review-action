@@ -1,0 +1,36 @@
+name: 'Assign Copilot Review'
+description: 'Automatically assign GitHub Copilot as a reviewer on pull requests'
+author: 'mokmok-dev'
+
+branding:
+  icon: 'git-pull-request'
+  color: 'blue'
+
+inputs:
+  github-token:
+    description: 'GitHub token with pull request write permissions'
+    required: true
+  pr-number:
+    description: 'Pull request number'
+    required: true
+  repository:
+    description: 'Repository in the format owner/repo (optional, defaults to current repository)'
+    required: false
+    default: ${{ github.repository }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Assign Copilot as reviewer
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        REPO="${{ inputs.repository }}"
+        echo "Adding Copilot as reviewer to PR #${{ inputs.pr-number }} in ${REPO}"
+
+        gh api --method POST \
+          "/repos/${REPO}/pulls/${{ inputs.pr-number }}/requested_reviewers" \
+          -f "reviewers[]=copilot-pull-request-reviewer[bot]"
+
+        echo "✓ Successfully added Copilot as a reviewer to PR #${{ inputs.pr-number }} in ${REPO}"

@@ -1,0 +1,15 @@
+name: Assign Copilot Review Example
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  pull-requests: write
+jobs:
+  assign-copilot-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Assign Copilot as reviewer
+        uses: mokmok-dev/assign-copilot-review-action@main
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pr-number: ${{ github.event.pull_request.number }}
